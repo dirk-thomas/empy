@@ -24,12 +24,9 @@ import sys
 import types
 
 try:
-    # The equivalent of import cStringIO as StringIO.
-    import cStringIO
-    StringIO = cStringIO
-    del cStringIO
+    from cStringIO import StringIO
 except ImportError:
-    import StringIO
+    from io import StringIO
 
 # For backward compatibility, we can't assume these are defined.
 False, True = 0, 1
@@ -430,7 +427,7 @@ class AbstractFile:
         self.mode = mode
         self.buffered = buffered
         if buffered:
-            self.bufferFile = StringIO.StringIO()
+            self.bufferFile = StringIO()
         else:
             self.bufferFile = theSubsystem.open(filename, mode)
         # Okay, we got this far, so the AbstractFile is initialized.
@@ -478,7 +475,7 @@ class Diversion:
     strings or (readable) file objects."""
 
     def __init__(self):
-        self.file = StringIO.StringIO()
+        self.file = StringIO()
 
     # These methods define the writable file-like interface for the
     # diversion.
@@ -504,7 +501,7 @@ class Diversion:
 
     def asFile(self):
         """Return the diversion as a file."""
-        return StringIO.StringIO(self.file.getvalue())
+        return StringIO(self.file.getvalue())
 
 
 class Stream:
@@ -2193,7 +2190,7 @@ class Interpreter:
 
     def expand(self, data, locals=None):
         """Do an explicit expansion on a subordinate stream."""
-        outFile = StringIO.StringIO()
+        outFile = StringIO()
         stream = Stream(outFile)
         self.invoke('beforeExpand', string=data, locals=locals)
         self.streams.push(stream)
