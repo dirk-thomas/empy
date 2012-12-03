@@ -396,7 +396,7 @@ class Stack:
 
     def filter(self, function):
         """Filter the elements of the stack through the function."""
-        self.data = filter(function, self.data)
+        self.data = list(filter(function, self.data))
 
     def purge(self):
         """Purge the stack."""
@@ -544,14 +544,14 @@ class Stream:
         independently."""
         if shortcut == 0:
             return NullFilter()
-        elif type(shortcut) is types.FunctionType or \
-             type(shortcut) is types.BuiltinFunctionType or \
-             type(shortcut) is types.BuiltinMethodType or \
-             type(shortcut) is types.LambdaType:
+        elif isinstance(shortcut, types.FunctionType) or \
+             isinstance(shortcut, types.BuiltinFunctionType) or \
+             isinstance(shortcut, types.BuiltinMethodType) or \
+             isinstance(shortcut, types.LambdaType):
             return FunctionFilter(shortcut)
-        elif type(shortcut) is types.StringType:
+        elif isinstance(shortcut, types.StringType):
             return StringFilter(filter)
-        elif type(shortcut) is types.DictType:
+        elif isinstance(shortcut, types.DictType):
             raise NotImplementedError, "mapping filters not yet supported"
         else:
             # Presume it's a plain old filter.
@@ -627,14 +627,14 @@ class Stream:
         divert to it yet."""
         if name is None:
             raise DiversionError, "diversion name must be non-None"
-        if not self.diversions.has_key(name):
+        if name not in self.diversions:
             self.diversions[name] = Diversion()
 
     def retrieve(self, name):
         """Retrieve the given diversion."""
         if name is None:
             raise DiversionError, "diversion name must be non-None"
-        if self.diversions.has_key(name):
+        if name in self.diversions:
             return self.diversions[name]
         else:
             raise DiversionError, "nonexistent diversion: %s" % name
@@ -650,7 +650,7 @@ class Stream:
         """Undivert a particular diversion."""
         if name is None:
             raise DiversionError, "diversion name must be non-None"
-        if self.diversions.has_key(name):
+        if name in self.diversions:
             diversion = self.diversions[name]
             self.filter.write(diversion.asString())
             if purgeAfterwards:
@@ -662,7 +662,7 @@ class Stream:
         """Purge the specified diversion."""
         if name is None:
             raise DiversionError, "diversion name must be non-None"
-        if self.diversions.has_key(name):
+        if name in self.diversions:
             del self.diversions[name]
             if self.currentDiversion == name:
                 self.currentDiversion = None
@@ -671,8 +671,7 @@ class Stream:
         """Undivert all pending diversions."""
         if self.diversions:
             self.revert() # revert before undiverting!
-            names = self.diversions.keys()
-            names.sort()
+            names = sorted(list(self.diversions.keys()))
             for name in names:
                 self.undivert(name)
                 if purgeAfterwards:
@@ -848,7 +847,7 @@ class StringFilter(Filter):
     filters any incoming data through it."""
 
     def __init__(self, table):
-        if not (type(table) == types.StringType and len(table) == 256):
+        if not (isinstance(table, types.StringType) and len(table) == 256):
             raise FilterError, "table must be 256-character string"
         Filter.__init__(self)
         self.table = table
@@ -1582,7 +1581,7 @@ class ControlToken(ExpansionToken):
                     self.subrun(info[0][1], interpreter, locals)
                 except FlowError:
                     raise
-                except Exception, e:
+                except Exception as e:
                     for secondary, tokens in info[1:]:
                         exception, variable = interpreter.clause(secondary.rest)
                         if variable is not None:
@@ -2087,7 +2086,7 @@ class Interpreter:
             self.globals = {}
         # Make sure that there is no collision between two interpreters'
         # globals.
-        if self.globals.has_key(self.pseudo):
+        if self.pseudo in self.globals:
             if self.globals[self.pseudo] is not self:
                 raise Error, "interpreter globals collision"
         self.globals[self.pseudo] = self
@@ -2096,7 +2095,7 @@ class Interpreter:
         """Remove the pseudomodule (if present) from the globals."""
         UNWANTED_KEYS = [self.pseudo, '__builtins__']
         for unwantedKey in UNWANTED_KEYS:
-            if self.globals.has_key(unwantedKey):
+            if unwantedKey in self.globals:
                 del self.globals[unwantedKey]
 
     def update(self, other):
@@ -2187,7 +2186,7 @@ class Interpreter:
 
     def include(self, fileOrFilename, locals=None):
         """Do an include pass on a file or filename."""
-        if type(fileOrFilename) is types.StringType:
+        if isinstance(fileOrFilename, types.StringType):
             # Either it's a string representing a filename ...
             filename = fileOrFilename
             name = filename
@@ -2242,7 +2241,7 @@ class Interpreter:
         for char in data:
             if char < ' ' or char > '~':
                 charOrd = ord(char)
-                if Interpreter.ESCAPE_CODES.has_key(charOrd):
+                if charOrd in Interpreter.ESCAPE_CODES:
                     result.append(self.prefix + '\\' + \
                                   Interpreter.ESCAPE_CODES[charOrd])
                 else:
@@ -2261,14 +2260,14 @@ class Interpreter:
         """Wrap around an application of a callable and handle errors.
         Return whether no error occurred."""
         try:
-            apply(callable, args)
+            callable(*args)
             self.reset()
             return True
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             # Handle keyboard interrupts specially: we should always exit
             # from these.
             self.fail(e, True)
-        except Exception, e:
+        except Exception as e:
             # A standard exception (other than a keyboard interrupt).
             self.fail(e)
         except:
@@ -2464,7 +2463,7 @@ class Interpreter:
             raise ValueError, "unpack tuple of wrong size"
         for i in range(len(names)):
             name = names[i]
-            if type(name) is types.StringType:
+            if isinstance(name, types.StringType):
                 self.atomic(name, values[i], locals)
             else:
                 self.multi(name, values[i], locals)
@@ -2475,7 +2474,7 @@ class Interpreter:
         left = self.tokenize(name)
         # The return value of tokenize can either be a string or a list of
         # (lists of) strings.
-        if type(left) is types.StringType:
+        if isinstance(left, types.StringType):
             self.atomic(left, value, locals)
         else:
             self.multi(left, value, locals)
@@ -2520,11 +2519,11 @@ class Interpreter:
         defined either in the locals or the globals."""
         self.invoke('beforeDefined', name=name, local=local)
         if locals is not None:
-            if locals.has_key(name):
+            if name in locals:
                 result = True
             else:
                 result = False
-        elif self.globals.has_key(name):
+        elif name in self.globals:
             result = True
         else:
             result = False
@@ -2571,9 +2570,9 @@ class Interpreter:
             self.invoke('beforeExecute', \
                         statements=statements, locals=locals)
             if locals is not None:
-                exec statements in self.globals, locals
+                exec(statements, self.globals, locals)
             else:
-                exec statements in self.globals
+                exec(statements, self.globals)
             self.invoke('afterExecute')
         finally:
             self.pop()
@@ -2587,9 +2586,9 @@ class Interpreter:
                         source=source, locals=locals)
             code = compile(source, '<single>', 'single')
             if locals is not None:
-                exec code in self.globals, locals
+                exec(code, self.globals, locals)
             else:
-                exec code in self.globals
+                exec(code, self.globals)
             self.invoke('afterSingle')
         finally:
             self.pop()
@@ -2621,7 +2620,7 @@ class Interpreter:
                 hook.push()
                 try:
                     method = getattr(hook, _name)
-                    apply(method, (), keywords)
+                    method(*(), **keywords)
                 finally:
                     hook.pop()
 
@@ -2780,7 +2779,7 @@ class Interpreter:
 
     def invokeHook(self, _name, **keywords):
         """Manually invoke a hook."""
-        apply(self.invoke, (_name,), keywords)
+        self.invoke(*(_name,), **keywords)
 
     # Callbacks.
 
@@ -2810,7 +2809,7 @@ class Interpreter:
         """Flatten the contents of the pseudo-module into the globals
         namespace."""
         if keys is None:
-            keys = self.__dict__.keys() + self.__class__.__dict__.keys()
+            keys = list(self.__dict__.keys()) + list(self.__class__.__dict__.keys())
         dict = {}
         for key in keys:
             # The pseudomodule is really a class instance, so we need to
@@ -2879,8 +2878,7 @@ class Interpreter:
 
     def getAllDiversions(self):
         """Get the names of all existing diversions."""
-        names = self.stream().diversions.keys()
-        names.sort()
+        names = sorted(list(self.stream().diversions.keys()))
         return names
     
     # Filter.
@@ -2940,7 +2938,7 @@ class Processor:
         self.documents = {}
 
     def scan(self, basename, extensions=DEFAULT_EMPY_EXTENSIONS):
-        if type(extensions) is types.StringType:
+        if isinstance(extensions, types.StringType):
             extensions = (extensions,)
         def _noCriteria(x):
             return True
@@ -3027,7 +3025,7 @@ def environment(name, default=None):
     """Get data from the current environment.  If the default is True
     or False, then presume that we're only interested in the existence
     or non-existence of the environment variable."""
-    if os.environ.has_key(name):
+    if name in os.environ:
         # Do the True/False test by value for future compatibility.
         if default == False or default == True:
             return True
@@ -3200,7 +3198,7 @@ def invoke(args):
                                 _unicodeInputErrors, _unicodeOutputErrors)
     # Now initialize the output file if something has already been selected.
     if _output is not None:
-        _output = apply(AbstractFile, _output)
+        _output = AbstractFile(*_output)
     # Set up the main filename and the argument.
     if not remainder:
         remainder.append('-')
@@ -3210,7 +3208,7 @@ def invoke(args):
         raise ValueError, "-b only makes sense with -o or -a arguments"
     if _prefix == 'None':
         _prefix = None
-    if _prefix and type(_prefix) is types.StringType and len(_prefix) != 1:
+    if _prefix and isinstance(_prefix, types.StringType) and len(_prefix) != 1:
         raise Error, "prefix must be single-character string"
     interpreter = Interpreter(output=_output, \
                               argv=remainder, \
