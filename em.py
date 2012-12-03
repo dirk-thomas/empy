@@ -565,7 +565,7 @@ class Stream:
         thisFilter, lastFilter = self.filter, None
         while thisFilter is not None and thisFilter is not self.file:
             lastFilter = thisFilter
-            thisFilter = thisFilter.next()
+            thisFilter = thisFilter.__next__()
         return lastFilter
 
     def install(self, shortcut=None):
@@ -774,7 +774,7 @@ class Filter:
             raise NotImplementedError
         self.sink = None
 
-    def next(self):
+    def __next__(self):
         """Return the next filter/file-like object in the sequence, or None."""
         return self.sink
 
@@ -820,7 +820,7 @@ class Filter:
         this, last = self, self
         while this is not None:
             last = this
-            this = this.next()
+            this = this.__next__()
         return last
 
 class NullFilter(Filter):
