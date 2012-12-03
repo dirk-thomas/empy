@@ -298,7 +298,7 @@ class MetaError(Exception):
         self.exc = exc
 
     def __str__(self):
-        backtrace = map(lambda x: str(x), self.contexts)
+        backtrace = [str(x) for x in self.contexts]
         return "%s: %s (%s)" % (self.exc.__class__, self.exc, \
                                 (string.join(backtrace, ', ')))
 
@@ -413,7 +413,7 @@ class Stack:
     def __repr__(self):
         return '<%s instance at 0x%x [%s]>' % \
                (self.__class__, id(self), \
-                string.join(map(repr, self.data), ', '))
+                string.join(list(map(repr, self.data)), ', '))
 
 
 class AbstractFile:
@@ -1621,7 +1621,7 @@ class ControlToken(ExpansionToken):
             token.run(interpreter, locals)
 
     def substring(self):
-        return string.join(map(str, self.subtokens), '')
+        return string.join(list(map(str, self.subtokens)), '')
 
     def string(self):
         if self.kind == 'primary':
