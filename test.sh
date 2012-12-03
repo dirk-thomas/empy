@@ -13,7 +13,7 @@ EMPY=em.py
 SAMPLE=sample.em
 BENCH=sample.bench
 
-if $PYTHON -c 'import sys; print sys.version' > /dev/null
+if $PYTHON -c 'import sys; print(sys.version)' > /dev/null
 then
     :
 else
