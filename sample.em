@@ -19,7 +19,7 @@ These are uppercase As (presuming ASCII): A, @\q1001, @\o101, @\d065, @\x41.
 @{
 import sys
 # This is just a normal Python comment.
-print "This is more text."
+print("This is more text.")
 }@
 @# Note the @{ ... }@ convention to suppress the newline following the }.
 @# Also note that comments are completely tossed: This is not expanded: @(x).
@@ -40,11 +40,11 @@ Internal whitespace is fine: @( x ) squared is @( square(x) ).
 Statements: @{sys.stdout.write("%d**2 = %d" % (x, square(x)))}.
 Whitespace too: @{ sys.stdout.write("%d**2 = %d (still)" % (x, square(x))) }.
 @{
-print "But only on single-line statement expansions."
+print("But only on single-line statement expansions.")
 if 1:
-    print "Internal whitespace on multi-line statements is significant."
+    print("Internal whitespace on multi-line statements is significant.")
 for i in range(2):
-    print "Normal Python indentation rules must be followed here."
+    print("Normal Python indentation rules must be followed here.")
 }@
 Simple expressions: x is @x, l is @l, s is "@s," and @x squared is @square(x).
 Literals too: x is @x, but would be written @@x.
