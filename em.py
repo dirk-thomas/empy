@@ -28,9 +28,6 @@ try:
 except ImportError:
     from io import StringIO
 
-# For backward compatibility, we can't assume these are defined.
-False, True = 0, 1
-
 # Some basic defaults.
 FAILURE_CODE = 1
 DEFAULT_PREFIX = '@'
