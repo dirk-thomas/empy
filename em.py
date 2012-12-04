@@ -1655,7 +1655,7 @@ class Scanner:
     def __len__(self): return len(self.buffer) - self.pointer
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return ''.join([self.buffer[x] for x in range(self.pointer + (index.start if index.start else 0), (self.pointer + index.stop) if index.stop else len(self.buffer), index.step if index.step else 1)])
+            return ''.join([self.buffer[x] for x in range(self.pointer + (index.start if index.start else 0), (self.pointer + index.stop) if index.stop is not None else len(self.buffer), index.step if index.step else 1)])
         return self.buffer[self.pointer + index]
 
     def __getslice__(self, start, stop):
