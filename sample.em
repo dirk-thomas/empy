@@ -58,7 +58,7 @@ But whitespace can go inside the brackets: @l[0] is @l[ 0 ].
 Same with functions: @square(x) is @square( x ).
 The same applies to the other forms.
 Involved: The legal digits are @string.digits.
-More involved: The names of my friends are @string.join(friends, ', ').
+More involved: The names of my friends are @(', '.join(friends)).
 Following expressions: Pluralize "@word" as "@(word)s," or maybe "@word@ s."
 By default str is used (@s), but you can use repr if you want (@`s`).
 Conditional expressions: @(x ? "x is true" ! "x is false").
