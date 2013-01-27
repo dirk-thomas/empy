@@ -2452,7 +2452,7 @@ class Interpreter:
             raise ValueError("unpack tuple of wrong size")
         for i in range(len(names)):
             name = names[i]
-            if isinstance(name, bytes):
+            if isinstance(name, bytes) or isinstance(name, str):
                 self.atomic(name, values[i], locals)
             else:
                 self.multi(name, values[i], locals)
@@ -2463,7 +2463,7 @@ class Interpreter:
         left = self.tokenize(name)
         # The return value of tokenize can either be a string or a list of
         # (lists of) strings.
-        if isinstance(left, bytes):
+        if isinstance(left, bytes) or  isinstance(left, str):
             self.atomic(left, value, locals)
         else:
             self.multi(left, value, locals)
