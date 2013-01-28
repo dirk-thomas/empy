@@ -17,9 +17,9 @@ __license__ = 'LGPL'
 
 import copy
 import getopt
+import inspect
 import os
 import re
-import string
 import sys
 import types
 
@@ -539,6 +539,7 @@ class Stream:
         if shortcut == 0:
             return NullFilter()
         elif isinstance(shortcut, types.FunctionType) or \
+             inspect.ismethoddescriptor(shortcut) or \
              isinstance(shortcut, types.BuiltinFunctionType) or \
              isinstance(shortcut, types.BuiltinMethodType) or \
              isinstance(shortcut, types.LambdaType):

@@ -213,9 +213,9 @@ e and f should be 'x y': @`__e__`, @`__f__`
 @# Filters.
 @{import string}@
 This line should be in mixed case.
-@empy.setFilter(string.lower)@
+@empy.setFilter(str.lower)@
 This line should be all lowercase.
-@empy.setFilter(string.upper)@
+@empy.setFilter(str.upper)@
 This line should be all uppercase (how gauche).
 @empy.setFilter([em.LineBufferedFilter(), lambda x: '[%s]\n' % x[:-1]])@
 This line should be bracketed.
@@ -226,7 +226,7 @@ There should be stars every five characters on this line.
 This line should not appear at all!
 @empy.resetFilter()@
 This line should be back to mixed case.
-@empy.attachFilter(string.upper)@
+@empy.attachFilter(str.upper)@
 @empy.attachFilter(em.LineBufferedFilter())@
 @empy.attachFilter(lambda x: '[%s]\n' % x[:-1])@
 This line should be all uppercase with brackets.
