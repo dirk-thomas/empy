@@ -235,10 +235,10 @@ This line should be back to mixed case (again).
 
 @# Contexts, metaoperations.
 @{
-import StringIO
-def context():
-    return "%s:%d" % empy.identify()
-stringFile = StringIO.StringIO("2 + 2 = @(2 + 2) [@context()].\n")
+from __future__ import unicode_literals
+from io import StringIO
+def context(): return "%s:%d" % empy.identify()
+stringFile = StringIO("2 + 2 = @(2 + 2) [@context()].\n")
 }@
 The new context is @context().
 File inclusion [@context()]: @empy.include(stringFile)@
