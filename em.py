@@ -3228,7 +3228,7 @@ def invoke(args):
             elif which == 'file':
                 command = interpreter.string
                 name = '<file:%d (%s)>' % (i, thing)
-                target = '%s{execfile("""%s""")}' % (_prefix, thing)
+                target = '%s{exec(open("""%s""").read())}' % (_prefix, thing)
             elif which == 'import':
                 command = interpreter.string
                 name = '<import:%d>' % i
